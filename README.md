@@ -2,7 +2,6 @@
 
 An end-to-end data engineering and analytics solution built to ingest, clean, and model customer churn data in PostgreSQL, providing actionable business metrics to reduce customer loss.
 
----
 
 ## Executive Summary & Business Insights
 
@@ -33,14 +32,56 @@ In this phase, five PostgreSQL analytics views were implemented in `sql/04_creat
 ```text
 telecom-customer-churn-retention/
 ├── data/
-│   └── raw/                   # Raw customer churn dataset
+│   └── raw/                        # Raw customer churn dataset
 ├── sql/
 │   ├── 02_data_quality_checks.sql
 │   ├── 03_create_cleaned_table.sql
 │   └── 04_create_analytics_views.sql
 ├── src/
-│   └── ingest_to_postgres.py  # Python ingestion script
+│   ├── 01_ingest_to_postgres.py    # Loads raw CSV into PostgreSQL
+│   └── 02_train_model.py           # Trains XGBoost churn model
 ├── notebooks/
 │   └── 01_data_inspection.py
+├── models/                         # Saved trained model (.joblib)
+├── outputs/                        # Metrics, evaluation artifacts
+├── dashboard/
+│   └── telecom_churn.pbix          # Power BI executive dashboard
 ├── .gitignore
 └── README.md
+```
+
+---
+
+## Setup & Installation
+
+### Prerequisites
+- Python 3.10+
+- PostgreSQL (local or remote instance)
+
+### Steps
+
+1. Clone the repo and install dependencies:
+   ```
+   git clone https://github.com/hedijarraya/telecom-customer-churn-retention.git
+   cd telecom-customer-churn-retention
+   pip install -r requirements.txt
+   ```
+
+2. Create a `.env` file at the project root with your database connection:
+   ```
+   DATABASE_URL=postgresql://user:password@localhost:5432/telecom_db
+   ```
+
+3. Run the SQL scripts in order to build the data layers:
+   ```
+   sql/02_data_quality_checks.sql
+   sql/03_create_cleaned_table.sql
+   sql/04_create_analytics_views.sql
+   ```
+
+4. Train the churn prediction model:
+   ```
+   python src/02_train_model.py
+   ```
+
+5. Open `dashboard/telecom_churn.pbix` in Power BI Desktop and refresh the data connection.
