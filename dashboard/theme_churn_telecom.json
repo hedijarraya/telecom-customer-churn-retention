@@ -1,0 +1,98 @@
+{
+  "name": "Telecom Churn Analytics",
+  "dataColors": [
+    "#E63946",
+    "#F4A261",
+    "#2A9D8F",
+    "#264653",
+    "#457B9D",
+    "#8D99AE",
+    "#1D3557",
+    "#E76F51",
+    "#606C38",
+    "#BC6C25"
+  ],
+  "good": "#2A9D8F",
+  "neutral": "#F4A261",
+  "bad": "#E63946",
+  "maximum": "#E63946",
+  "center": "#F4A261",
+  "minimum": "#2A9D8F",
+  "null": "#B0B7C3",
+  "background": "#FFFFFF",
+  "foreground": "#1D3557",
+  "tableAccent": "#E63946",
+  "textClasses": {
+    "callout": {
+      "fontSize": 32,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#1D3557"
+    },
+    "title": {
+      "fontSize": 20,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#1D3557"
+    },
+    "header": {
+      "fontSize": 13,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#264653"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI",
+      "color": "#1D3557"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#FFFFFF" } },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#E5E7EB" } },
+            "radius": 6
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": true,
+            "shadowSpread": 0,
+            "shadowColor": { "solid": { "color": "#000000" } },
+            "shadowTransparency": 90
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [
+          {
+            "color": { "solid": { "color": "#E63946" } },
+            "fontSize": 28
+          }
+        ],
+        "categoryLabels": [
+          {
+            "color": { "solid": { "color": "#1D3557" } },
+            "fontSize": 12
+          }
+        ]
+      }
+    },
+    "barChart": {
+      "*": {
+        "dataPoint": [
+          { "defaultColor": { "solid": { "color": "#E63946" } } }
+        ]
+      }
+    }
+  }
+}
