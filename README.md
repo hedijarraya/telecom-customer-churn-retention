@@ -15,6 +15,14 @@ In this phase, five PostgreSQL analytics views were implemented in `sql/04_creat
 
 ---
 
+## Dashboard Preview
+
+Executive Power BI dashboard (`dashboard/telecom_churn.pbix`) — 4 KPI cards (total customers, churned customers, churn rate, MRR) and a 2x2 grid of breakdowns by contract type, tenure, payment method, and internet service. Bar colors are conditionally formatted by risk level (red ≥40% churn, orange 15-40%, green <15%).
+
+![Dashboard Overview](dashboard/dashboard_screenshot.png)
+
+---
+
 ## Data Pipeline Architecture
 
 1. **Ingestion & Data Quality (Silver Layer):** Raw CSV loaded to PostgreSQL, schema structured, missing `TotalCharges` handled, binary columns normalized.
