@@ -35,25 +35,61 @@ Executive Power BI dashboard (`dashboard/telecom_churn.pbix`) — 4 KPI cards (t
 
 ---
 
+## Machine Learning: Churn Prediction & Explainability
+
+A gradient-boosted model (XGBoost) predicts churn probability for each customer, with class imbalance handled via `scale_pos_weight`.
+
+| Metric | Value |
+|---|---|
+| ROC-AUC | 0.8392 |
+| Average Precision | 0.664 |
+
+**Model explainability (SHAP):** to understand *why* the model flags a customer as high-risk — not just *that* it does — SHAP values were computed on the trained pipeline.
+
+![SHAP Summary Plot](outputs/shap_summary.png)
+*Global feature importance: which variables push customers toward churn across the whole population (e.g. Month-to-month contract, Fiber optic, Electronic check).*
+
+![SHAP Waterfall — High Risk Customer](outputs/shap_waterfall_high_risk.png)
+*Individual explanation for a single high-risk customer: how each feature pushed their churn probability up or down from the baseline.*
+
+---
+
+## Business Risk Scoring
+
+Active customers (excluding those who already churned) are segmented into 4 risk tiers based on predicted churn probability, to prioritize retention actions and quantify financial exposure.
+
+| Risk Tier | Customers | MRR at Risk | Avg. Churn Probability | % of Active MRR |
+|---|---|---|---|---|
+| Critical | 352 | 27,186 DT | 82.4% | 8.58% |
+| High | 812 | 57,009 DT | 61.9% | 17.98% |
+| Medium | 1,049 | 73,511 DT | 36.6% | 23.19% |
+| Low | 2,961 | 159,280 DT | 8.0% | 50.25% |
+
+**Model validation:** among customers who actually churned historically, 86% (1,607 / 1,869) had been scored Critical or High risk — showing the model would have flagged the large majority of real departures in advance, had it been in production.
+
+---
+
 ## Project Structure
 
 ```text
 telecom-customer-churn-retention/
 ├── data/
-│   └── raw/                        # Raw customer churn dataset
+│   └── raw/                             # Raw customer churn dataset
 ├── sql/
 │   ├── 02_data_quality_checks.sql
 │   ├── 03_create_cleaned_table.sql
 │   └── 04_create_analytics_views.sql
 ├── src/
-│   ├── 01_ingest_to_postgres.py    # Loads raw CSV into PostgreSQL
-│   └── 02_train_model.py           # Trains XGBoost churn model
+│   ├── 01_ingest_to_postgres.py         # Loads raw CSV into PostgreSQL
+│   ├── 02_train_model.py                # Trains XGBoost churn model
+│   ├── 03_explainability_shap.py        # SHAP summary & waterfall plots
+│   └── 04_risk_scoring_business.py      # Risk tiers + MRR at risk
 ├── notebooks/
 │   └── 01_data_inspection.py
-├── models/                         # Saved trained model (.joblib)
-├── outputs/                        # Metrics, evaluation artifacts
+├── models/                               # Saved trained model (.joblib)
+├── outputs/                              # Metrics, SHAP plots, risk scoring CSVs
 ├── dashboard/
-│   └── telecom_churn.pbix          # Power BI executive dashboard
+│   └── telecom_churn.pbix                # Power BI executive dashboard
 ├── .gitignore
 └── README.md
 ```
@@ -92,4 +128,14 @@ telecom-customer-churn-retention/
    python src/02_train_model.py
    ```
 
-5. Open `dashboard/telecom_churn.pbix` in Power BI Desktop and refresh the data connection.
+5. Generate SHAP explainability plots:
+   ```
+   python src/03_explainability_shap.py
+   ```
+
+6. Generate business risk scoring:
+   ```
+   python src/04_risk_scoring_business.py
+   ```
+
+7. Open `dashboard/telecom_churn.pbix` in Power BI Desktop and refresh the data connection.
