@@ -1,15 +1,22 @@
+import os
+from pathlib import Path
+
 import pandas as pd
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
-DB_USER = "postgres"
-DB_PASS = "TelecomData2026!"
-DB_HOST = "localhost"
-DB_PORT = "5432"
-DB_NAME = "telecom_db"
+# --- 1. Connexion : lue dans le fichier .env, jamais écrite dans le code ---
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL non trouvée dans le fichier .env")
 
-engine = create_engine(f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+engine = create_engine(DATABASE_URL)
 
-csv_path = "../data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv"
+# --- 2. Lecture du CSV (chemin construit depuis la racine du projet) ---
+ROOT = Path(__file__).resolve().parents[1]
+csv_path = ROOT / "data" / "raw" / "WA_Fn-UseC_-Telco-Customer-Churn.csv"
+
 print("Chargement du CSV...")
 df = pd.read_csv(csv_path)
 
@@ -22,7 +29,8 @@ df.columns = [
     'payment_method', 'monthly_charges', 'total_charges', 'churn'
 ]
 
+# --- 3. Chargement idempotent : relancer le script remplace la table au lieu de dupliquer les lignes ---
 print("Insertion dans PostgreSQL...")
-df.to_sql('staging_churn', con=engine, if_exists='append', index=False)
+df.to_sql('staging_churn', con=engine, if_exists='replace', index=False)
 
-print("✅ Ingestion réussie ! 7 043 lignes insérées dans staging_churn.")
+print(f"✅ Ingestion réussie ! {len(df)} lignes insérées dans staging_churn.")
