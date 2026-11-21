@@ -2,6 +2,8 @@
 
 An end-to-end data engineering and analytics solution built to ingest, clean, and model customer churn data in PostgreSQL, providing actionable business metrics to reduce customer loss.
 
+**Dataset:** [IBM Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn), a public dataset of 7,043 customers and 21 attributes (contract, services, charges in USD, churn flag). No company data is used in this project.
+
 
 ## Executive Summary & Business Insights
 
@@ -60,12 +62,12 @@ Active customers (excluding those who already churned) are segmented into 4 risk
 
 | Risk Tier | Customers | MRR at Risk | Avg. Churn Probability | % of Active MRR |
 |---|---|---|---|---|
-| Critical | 352 | 27,186 DT | 82.4% | 8.58% |
-| High | 812 | 57,009 DT | 61.9% | 17.98% |
-| Medium | 1,049 | 73,511 DT | 36.6% | 23.19% |
-| Low | 2,961 | 159,280 DT | 8.0% | 50.25% |
+| Critical | 352 | $27,186 | 82.4% | 8.58% |
+| High | 812 | $57,009 | 61.9% | 17.98% |
+| Medium | 1,049 | $73,511 | 36.6% | 23.19% |
+| Low | 2,961 | $159,280 | 8.0% | 50.25% |
 
-**Model validation:** among customers who actually churned historically, 86% (1,607 / 1,869) had been scored Critical or High risk — showing the model would have flagged the large majority of real departures in advance, had it been in production.
+**Model validation:** the reference metric is the ROC-AUC of 0.84 measured on a held-out test set (20%, stratified). As an additional in-sample check, 86% (1,607 / 1,869) of all customers who churned were scored Critical or High risk; this figure includes customers seen during training, so it is optimistic.
 
 ---
 
@@ -111,31 +113,36 @@ telecom-customer-churn-retention/
    pip install -r requirements.txt
    ```
 
-2. Create a `.env` file at the project root with your database connection:
+2. Create a `.env` file at the project root with your database connection (it is ignored by Git):
    ```
    DATABASE_URL=postgresql://user:password@localhost:5432/telecom_db
    ```
 
-3. Run the SQL scripts in order to build the data layers:
+3. Download `WA_Fn-UseC_-Telco-Customer-Churn.csv` from [Kaggle](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) into `data/raw/`, then load it into PostgreSQL (re-running it replaces the table, it never duplicates rows):
+   ```
+   python src/01_ingest_to_postgres.py
+   ```
+
+4. Run the SQL scripts in order to build the data layers:
    ```
    sql/02_data_quality_checks.sql
    sql/03_create_cleaned_table.sql
    sql/04_create_analytics_views.sql
    ```
 
-4. Train the churn prediction model:
+5. Train the churn prediction model:
    ```
    python src/02_train_model.py
    ```
 
-5. Generate SHAP explainability plots:
+6. Generate SHAP explainability plots:
    ```
    python src/03_explainability_shap.py
    ```
 
-6. Generate business risk scoring:
+7. Generate business risk scoring:
    ```
    python src/04_risk_scoring_business.py
    ```
 
-7. Open `dashboard/telecom_churn.pbix` in Power BI Desktop and refresh the data connection.
+8. Open `dashboard/telecom_churn.pbix` in Power BI Desktop and refresh the data connection.
